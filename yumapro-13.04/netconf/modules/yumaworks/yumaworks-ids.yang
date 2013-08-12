@@ -1,0 +1,34 @@
+module yumaworks-ids {
+
+    namespace "http://yumaworks.com/ns/yumaworks-ids";
+    prefix "yid";
+
+    import ietf-netconf-monitoring { prefix mon; }
+
+    organization "YumaWorks, Inc.";
+
+    contact
+        "Support <support@yumaworks.com>";
+
+    description "YumaPro Common Identities";
+
+    revision 2012-06-28 {
+       description 
+         "Initial version.";
+    }
+
+  identity netconf-http {
+    base mon:transport;
+    description
+      "REST API over HTTP.";
+  }
+
+  identity netconf-cli {
+    base mon:transport;
+    description
+      "CLI over SSH.";
+  }
+
+
+}
+

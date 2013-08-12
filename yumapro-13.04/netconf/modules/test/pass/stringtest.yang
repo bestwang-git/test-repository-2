@@ -1,0 +1,66 @@
+module stringtest {
+
+  namespace "http://www.netconfcentral.org" + "/ns/stringtest";
+  prefix "stringtest";
+
+  revision 2011-03-28 {
+    description "test string quoting.";
+  }
+
+  grouping g1 {
+    leaf stringtest1 {
+      type string;
+      description 
+       "   this is a " + "test";
+    }
+  }
+
+  leaf stringtest2 {
+    type string;
+    description 
+     "   \nthis is a " + "\\test";
+  }
+
+  leaf 'string' 
+    + "test3" {
+    type string;
+    description 
+     "\n\n\\\t   this is a " + "\"\"test";
+  }
+
+
+  leaf 'string' 
+    + "test4" {
+    type string;
+    description 
+     "\n\n\\\t   this is a " + "\"\"test" +
+         " a test " +
+        'another test' + "this test";
+  }
+
+  container stringtest5 {
+    description 
+     "\pthis is a test";
+
+     uses g1;
+
+     container s5a {
+        leaf leaf-s5a {
+          type string;
+          reference
+            "\nthis is a test" +
+            'another test' +
+            "\t\\test again";
+        }
+     }
+  }
+ 
+  augment "/stringtest5" +
+     "/s5a" {
+      leaf aug1 {
+        type leafref {
+          path "/string" + "test4";
+        }
+      }
+   }
+}

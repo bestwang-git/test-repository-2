@@ -1,0 +1,63 @@
+module sil-error {
+
+  namespace "http://www.netconfcentral.org/ns/sil-error";
+  prefix "silerr";
+
+  description 
+    "Implemented module to cause a SIL callback to generate
+     error return codes for a specified callback mode.
+     A few typical data structures are provided to test
+     recovery for different code paths.";
+
+  revision 2012-11-24 {
+    description "Initial version.";
+  }
+
+  typedef sil-error-phase {
+    type enumeration {
+      enum none;
+      enum validate;
+      enum apply;
+      enum commit;
+      enum rollback;
+    }
+    default none;
+  }
+
+  grouping sil-error-test {
+    leaf sil-phase { 
+      type sil-error-phase;
+      description 
+        "Set this to the SIL callback phase you want to cause an
+         operation-failed error to occur.";
+    }
+    leaf sil-trigger {
+      type uint32;
+      description 
+        "Set this object to trigger an operation-failed error
+         if the sil-error-phase is not set to 'none'.";
+    }
+  }
+  
+  uses sil-error-test;
+
+  container sil-error-con { 
+     uses sil-error-test;
+  }
+
+  list sil-error-list { 
+     key id;
+     leaf id { type string; }
+     uses sil-error-test;
+  }
+
+  container sil-error-con2 {
+    choice sil-error-choice {
+      leaf dummy { type int8; }
+      case real {
+        uses sil-error-test;
+      }
+    }
+  }
+
+}

@@ -1,0 +1,222 @@
+# Makefile for NETCONF project
+#  
+#   ncx directory
+
+############### SOURCE PROFILE ##############################
+
+PROJECT_NM=yumapro
+SUBDIR_NM=ncx
+SUBDIR_CPP=
+LIBPREFIX=
+
+LIBNAME=lib$(LIBPREFIX)$(PROJECT_NM)_$(SUBDIR_NM)
+SENDBUFF_LIBNAME=lib$(LIBPREFIX)sendbuff
+
+
+############### TARGET PROFILE ##############################
+
+TARGET=$(TBASE)/$(SUBDIR_NM)
+
+SENDBUFF_OBJS = $(patsubst %.c,$(TARGET)/%.o,send_buff.c)
+SENDBUFF_OBJS += $(patsubst %.c,$(TARGET)/%.o,status.c)
+
+LIB_INST=$(TBASE)/lib
+
+ifdef FREEBSD
+ REAL_INST=$(DESTDIR)$(PREFIX)/lib
+else
+ ifdef LIB64
+  REAL_INST=$(DESTDIR)$(PREFIX)/lib64
+ else
+  REAL_INST=$(DESTDIR)$(PREFIX)/lib
+ endif # LIB64
+endif # FREEBSD
+
+# if the target is DEBIAN or RPM package, then
+# install the include files
+REAL_INC_INST=$(DESTDIR)$(PREFIX)/include/$(PROJECT_NM)
+
+######################### MAKE RULES ######################
+
+all: ncxdummy ncxlib
+
+#################### PLATFORM DEFINITIONS ############
+include ../platform/platform.profile
+
+################ DEPENDENCIES #########################
+# depend rule must be included after the 'all' make rule
+
+include ../platform/platform.profile.depend
+
+BLD_INCLUDES=
+
+ifndef DEBIAN
+ ifndef EVAL
+  BLD_INCLUDES=includes
+ endif # EVAL
+endif # DEBIAN
+
+test:
+
+# build the library in any developer context
+# and in the 1-pass RPM RELEASE build
+# for ubunte RELEASE builds, only build if 
+# this is real build not DEVELOPER
+# >> new packaging is all, server, client
+# >> docs and libraries are not in special packages
+# >> maintained to support debiaa/OLD_PACKAGES/
+
+ifdef DEBIAN
+
+ ifdef DEVELOPER
+# just install the H files
+install: includes
+ endif # DEVELOPER
+
+ ifdef SHLIB_NCX
+# install the NCX library
+install: install-lib
+ endif # SHLIB_NCX
+
+ ifdef EVAL
+# install the NCX library
+install: install-lib
+ endif # EVAL
+
+ ifdef SERVER
+install: includes install-lib
+ endif # SERVER
+
+ ifdef CLIENT
+install:
+ endif # CLIENT
+
+ ifdef BUILD_ALL
+install: includes install-lib
+ endif # BUILD_ALL
+
+else # not DEBIAN
+
+ ifdef CROSS_TARGET
+# don't install anything
+install:
+ else # not CROSS_TARGET
+# Fedora package or normal build: 'make' or 'make STATIC=1'
+install: $(BLD_INCLUDES) install-lib
+ endif # CROSS_TARGET
+endif # DEBIAN
+
+
+install-lib:
+# install static or dynamic libncx file
+	mkdir -p $(REAL_INST)
+	install -v $(OWNER) $(GRP) \
+	$(LIB_INST)/$(LIBNAME).$(LIBNCXSUFFIX) $(REAL_INST)
+ifndef STATIC
+ ifndef FREEBSD
+  ifndef MAC
+   ifndef PACKAGE_BUILD
+	# skip in MacOsX, RPM, FreeBSD and rest of debian fakeroot builds
+	ldconfig $(REAL_INST)
+   endif # RELEASE
+  endif  # MAC
+ endif  # FREEBSD
+endif  # STATIC
+
+
+# 1 library uninstall rule for all variants
+# remove NCX library, ncx and platform includes
+uninstall:
+	rm -f $(REAL_INST)/$(LIBNAME).$(LIBSUFFIX)*
+	rm -rf $(REAL_INC_INST)/$(SUBDIR_NM)
+	rm -rf $(REAL_INC_INST)/platform
+
+
+# check which variant of the library to build
+ifdef DEVELOPER
+ncxlib:
+else
+ ifdef RELEASE
+  ifdef STATIC
+ncxlib: $(LBASE)/$(LIBNAME).a $(LBASE)/$(SENDBUFF_LIBNAME).a makencxlib
+  else
+ncxlib: $(LBASE)/$(LIBNAME).so.$(SOVERSION) $(LBASE)/$(LIBNAME).a \
+	$(LBASE)/$(SENDBUFF_LIBNAME).a makencxlib
+  endif # STATIC
+ else
+ncxlib: $(LBASE)/$(LIBNAME).$(LIBNCXSUFFIX) $(LBASE)/$(SENDBUFF_LIBNAME).a \
+	makencxlib
+ endif # RELEASE
+endif # DEVELOPER
+
+makencxlib:
+ifndef STATIC
+ ifndef MAC
+	(cd $(LBASE); ln -f -s $(LIBNAME).$(LIBNCXSUFFIX) \
+	$(LIBNAME).$(LIBSUFFIX))
+ endif  # MAC
+endif  # STATIC
+
+
+# this dummy rule keeps make from deleting the $(OBJS) as
+# intermediate files
+ncxdummy: dependencies $(OBJS)
+
+clean:
+	rm -f $(OBJS) $(LBASE)/$(LIBNAME).* $(LBASE)/$(SENDBUFF_LIBNAME).a
+
+superclean: clean
+	rm -f *~  $(DEPS) dependencies 
+
+distclean: superclean
+
+curversion.h:
+
+
+ifdef WINDOWS
+RDYNAMIC=
+LC=
+else
+RDYNAMIC=-rdynamic
+LC=-lc
+endif
+
+# this rule is ignored if STATIC=1; used only in linux
+$(LBASE)/$(LIBNAME).so.$(SOVERSION): $(OBJS)
+ifdef FREEBSD
+	$(CC) $(CFLAGS) -shared $(RDYNAMIC) -Wl,-soname,$(LIBNAME).so.$(SOVERSION) -o $@ $(OBJS) -L/usr/local/lib $(LC) -lxml2
+else
+	$(CC) $(CFLAGS) -shared $(RDYNAMIC) -Wl,-soname,$(LIBNAME).so.$(SOVERSION) -o $@ $(OBJS) $(LC) -lxml2
+endif # FREEBSD
+
+# this rule is ignored if STATIC=1; used only on MacOSX
+$(LBASE)/$(LIBNAME).dylib: $(OBJS)
+	$(CC) $(CFLAGS) -shared -dynamiclib -std=gnu99 -current_version \
+	$(SOVERSION) \
+	-undefined dynamic_lookup \
+	-o $@ -install_name $(LIBNAME).dylib $(OBJS) -lxml2
+
+# the sendbuff library is built static-only and not installed in the system
+$(LBASE)/$(SENDBUFF_LIBNAME).a: $(SENDBUFF_OBJS)
+	$(LIBTOOL) cr $@ $(SENDBUFF_OBJS)
+	$(RANLIB) $@
+
+
+# install the H files into $DESTDIR/usr/include
+includes:
+	mkdir -p $(REAL_INC_INST)/$(SUBDIR_NM)
+	mkdir -p $(REAL_INC_INST)/platform
+	cp *.h $(REAL_INC_INST)/$(SUBDIR_NM)
+	cp ../platform/procdefs.h $(REAL_INC_INST)/platform
+
+
+.PHONY: includes ncxdummy ncxlib makencxlib install-lib
+
+# prevent the make program from choking on all the symbols
+# that get generated from autogenerated make rules
+.NOEXPORT:
+
+ifndef DEVELOPER
+include ./dependencies
+endif
+

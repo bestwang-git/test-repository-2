@@ -1,0 +1,51 @@
+module speedtest1 {
+
+    namespace "http://netconfcentral.org/ns/speedtest1";
+    prefix "speedtest1";
+
+    revision 2011-10-27 {
+        description "Initial revision.";
+    }
+
+    container acls {
+      description
+        "Test to load and edit large list of dummy ACLs.
+         Example:
+          <seq>
+            <id>2011</id>
+            <action>permit</action>
+            <source>0000.0001.07d1</source>
+            <destination>0000.0001.07d2</destination>
+          </seq>
+        ";
+
+      list seq {
+        key id;
+        leaf id { 
+          type uint32 {
+            range "1000 .. 6000";
+          }
+        }
+        leaf action {
+          type enumeration {
+            enum permit;
+            enum deny;
+          }
+          mandatory true;
+        }
+        leaf source {
+          type string {
+            length "14";
+          }
+          mandatory true;
+        }
+        leaf destination {
+          type string {
+            length "14";
+          }
+          mandatory true;
+        }
+      }
+    }
+
+}

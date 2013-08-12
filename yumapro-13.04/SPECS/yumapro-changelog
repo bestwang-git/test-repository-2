@@ -1,0 +1,73 @@
+%changelog
+* Thu Apr 04 2013 Andy Bierman <andy at yumaworks.com> 13.04-1
+  First 13.04 release
+
+  ** Sub-task
+    * [YPW-12] - Integrated HTTP/REST access to database
+       NETCONF, CLI, REST all share same locks
+    * [YPW-13] - Entity-ID Filtering
+    * [YPW-14] - Entity-ID If-Match Support
+    * [YPW-27] - API for using external syslog service instead of
+                 the Linux syslog service
+
+  ** Bug
+    * [YPW-45] - IdentifierOrZero does not work in yangcli command line
+                 parsing
+    * [YPW-51] - yangdump C code gen has extra code for notifications
+    * [YPW-57] - entries added out of order in system-ordered list
+    * [YPW-61] - yangcli stomps aliases...
+    * [YPW-65] - yangcli_uservars.xml and .yangcli_history files corrupted;
+                 old versions came back
+    * [YPW-69] - test-apply in developer doc
+    * [YPW-89] - version string buffer overflow error
+    * [YPW-90] - notification filtering does not work
+    * [YPW-91] - directories specified in HOME, YUMAPRO_HOME,. YUMAPRO_INSTALL
+                 env-vars and CLI params are not verified
+    * [YPW-92] - NACM counters get deleted if the /nacm counter is replaced
+    * [YPW-93] - anyxml cannot be edited correctly
+    * [YPW-96] - commit timeout rollback does not always get edit list
+                 correct
+    * [YPW-97] - clients cannot find yuma-netconf.yang because it is not
+                 advertised by the server
+    * [YPW-99] - NACM data rules not applied if node added after rule was
+                 added
+    * [YPW-100] - NACM data rules not applied to candidate datastore after
+                 it changes
+    * [YPW-101] - Creation and deletion of default NP containers is not
+                  handled correctly
+    * [YPW-102] - Incorrect session connected information with session-cfg
+                  show command
+    * [YPW-104] - XPath searches sometimes returned in wrong order
+    * [YPW-106] - Not all the connected sessions are cleared when the server
+                  exits.
+    * [YPW-107] - HOME environment variable problems when running server as
+                  deamon
+    * [YPW-108] - home and yumapro-home variables ignored if set in .conf
+                  file
+    * [YPW-109] - yangcli exits if wrong password given
+    * [YPW-110] - enum values not always created correctly
+    * [YPW-111] - identityref not supposed to allow base as a valid value
+    * [YPW-112] - XPath get of list key produces 2 copies of key leaf
+    * [YPW-113] - editing child nodes of default NP container does not work
+    * [YPW-114] - Latest cheetah-integ yangcli-pro crashes when "replace"
+                  command issued
+    * [YPW-115] - load submodule crashes server
+    * [YPW-116] - yangdump not generating correct code for edit callbacks
+                  for union leafs
+
+  ** Improvement
+    * [YPW-95] - cheetah-val speed tests
+    * [YPW-98] - add message-indent parameter to client and server
+
+  ** New Feature
+    * [YPW-80] - XPath performance improvements
+    * [YPW-81] - Entity ID tagging
+    * [YPW-84] - add configure mode in yangcli (also yp-shell)
+    * [YPW-86] - Add yp-shell program and control message support in server
+    * [YPW-105] - backup/restore support
+
+
+  ** Task
+    * [YPW-88] - investigate performance impact of IO buffer sizes
+
+

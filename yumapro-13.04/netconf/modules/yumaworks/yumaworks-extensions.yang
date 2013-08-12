@@ -1,0 +1,108 @@
+module yumaworks-extensions {
+
+  namespace "http://yumaworks.com/ns/yumaworks-extensions";
+
+  prefix "ywx";
+
+  organization "YumaWorks, Inc.";
+
+  contact
+    "Support <support@yumaworks.com>";
+
+  description
+    "This module contains definitions for YumaWorks YANG extensions.";
+
+  revision 2013-01-27 {
+    description 
+       "Add help string extension";
+  }
+
+  revision 2012-06-28 {
+    description 
+       "Initial version";
+  }
+
+  extension alt-name {
+    description
+      "Used within a data node definition to specify an alternate
+       name for the node.  The --alt-names parameter must
+       be enabled for these names to be used.";
+  }
+
+  extension notif-root {
+    description
+      "Used within a container definition to indicate it is
+       really a root container for a conceptual NETCONF 
+       notification events, instead of just an empty container.";
+  }
+
+  extension rpc-hook {
+    description
+      "Used within a leaf definition (type should be string)
+       to indicate it is really a symbolic link to the 
+       specified RPC function. The data type format is 
+       module-name:rpc-name (yt:FeatureSpec)";
+    argument rpc {
+      yin-element false;
+    }
+  }
+
+  extension rpc-root {
+    description
+      "Used within a container definition to indicate it is
+       really a root container for a conceptual NETCONF 
+       operations, instead of just a container.
+       This container is allowed to have leaf children
+       which include an 'rpc-hook' extension.  This allows
+       REST-API method hooks within the data tree.  These
+       containers are ignored by NETCONF.";
+  }
+
+  extension urlpath {
+    description
+      "Used within a leaf or leaf-list definition to indicate it is
+       really a REST URI path string, not a plain string.";
+  }
+
+  extension cli-text-block {
+    description
+      "If this extension is present in an empty container
+       or list, it will be treated in unit-test parsing as a
+       container or list of ordered text commands, 1 per line.
+       Line extension is needed to wrap a command into
+       many lines.
+
+       Example YANG:
+
+        container setup {
+           ut:cli-text-block;
+        }
+
+       Example test script or conf file usage: 
+
+        setup {
+          run test1-script
+          get-config source=running
+          lock target=candidate
+          some-long-command parms='this is a wrapped \
+            line in a text block'
+        }
+      ";
+  }
+
+  extension help {
+    description
+      "Used within a rpc or data definition statement to
+       provide a short help text string for CLI
+       and other applications to use in addition to
+       the description statement.
+
+       The 'helptext' argument is the help text string,
+       which should be 60 characters or less in length.";
+    argument helptext {
+      yin-element true;
+    }
+  }
+
+}
+

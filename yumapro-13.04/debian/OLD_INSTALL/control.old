@@ -1,0 +1,81 @@
+Source: yumapro
+Section: devel
+Priority: extra
+Maintainer: YumaWorks, Inc. <andy@yumaworks.com>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.8.1
+Homepage: http://www.yumaworks.com/
+
+Package: yumapro-modules
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}
+Description: YumaPro (modules)
+ YumaPro is a multi-protocol management API development
+ toolkit. This package contains the YumaPro YANG modules.
+
+Package: libyumapro-ncx
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: YumaPro (ncx)
+ YumaPro is a multi-protocol management API development toolkit.
+ The libyumapro_ncx library is used by all YumaPro programs and
+ also SIL modules.
+
+Package: yumapro-server
+Architecture: any
+Depends: yumapro-modules, ${shlibs:Depends}, ${misc:Depends}
+Description: YumaPro (server)
+ YumaPro is a multi-protocol management API development toolkit.
+ The netconfd-pro server includes an automated central NETCONF
+ protocol stack, based directly on YANG modules. The yangdump-pro and
+ yangdiff-pro development tools are also included, to compile and process
+ YANG modules.
+
+Package: yumapro-client
+Architecture: any
+Depends: yumapro-modules, ${shlibs:Depends}, ${misc:Depends}
+Description: YumaPro (client)
+ YumaPro is a multi-protocol management API development toolkit.
+ The yangcli-pro client program can manage any NETCONF server
+ using YANG modules.
+
+Package: yumapro-dev
+Architecture: all
+Depends: yumapro-server
+Description: YumaPro (dev)
+ YumaPro is a multi-protocol management API development toolkit.
+ This package contains H files, scripts, and other files needed
+ to create SIL code for use with the netconfd-pro server.
+
+Package: yumapro-common-doc
+Architecture: all
+Section: doc
+Depends:
+Description: YumaPro (common-doc)
+ YumaPro is a multi-protocol management API development toolkit.
+ This package contains the common user manuals for YumaPro Server
+ and YumaPro Client tools.
+
+Package: yumapro-client-doc
+Architecture: all
+Section: doc
+Depends:
+Description: YumaPro (client-doc)
+ YumaPro is a multi-protocol management API development toolkit.
+ This package contains the YumaPro Client package user manuals.
+
+Package: yumapro-server-doc
+Architecture: all
+Section: doc
+Depends:
+Description: YumaPro (server-doc)
+ YumaPro is a YANG-based NETCONF-over-SSH client and server development
+ toolkit. This package contains the YumaPro Server package user and
+ developer manuals.
+
+
+
+
+
+

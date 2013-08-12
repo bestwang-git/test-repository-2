@@ -1,0 +1,357 @@
+module ietf-netconf-tls {
+
+ namespace "urn:ietf:params:xml:ns:yang:ietf-netconf-tls";
+
+ prefix "nctls";
+
+ import ietf-yang-types {
+  prefix yang;
+ }
+
+ import ietf-netconf-acm {
+  prefix nacm;
+ }
+
+ organization
+  "IETF NETCONF (Network Configuration) Working Group";
+
+ contact
+  "WG Web:   <http://tools.ietf.org/wg/netconf/>
+   WG List:  <mailto:netconf@ietf.org>
+
+   WG Chair: Mehmet Ersue
+             <mailto:mehmet.ersue@nsn.com>
+
+
+   WG Chair: Bert Wijnen
+             <mailto:bertietf@bwijnen.net>
+
+   Editor:   Mohamad Badra
+             <mailto:mbadra@gmail.com>";
+
+ description
+  "This module applies to NETCONF over TLS.  It specifies how NETCONF
+   servers transform X.509 certificates presented by clients into
+   NETCONF usernames.  It also specifies how NETCONF servers transform
+   pre-shared TLS keys into NETCONF usernames.
+
+   The cert-maps container in this YANG module is patterned after parts
+   of the SNMP-TLS-TM-MIB defined in RFC 6353.  Much of the description
+   text has been copied directly from the SNMP-TLS-TM-MIB, and modified
+   as necessary.
+
+   Copyright (c) 2012 IETF Trust and the persons identified as
+   authors of the code. All rights reserved.
+
+   Redistribution and use in source and binary forms, with or
+   without modification, is permitted pursuant to, and subject
+   to the license terms contained in, the Simplified BSD
+   License set forth in Section 4.c of the IETF Trust's
+   Legal Provisions Relating to IETF Documents
+   (http://trustee.ietf.org/license-info).
+
+   This version of this YANG module is part of RFC XXXX; see
+   the RFC itself for full legal notices.";
+ // RFC Ed.: replace XXXX with actual RFC number and
+ // remove this note
+
+ // RFC Ed.: please update the date to the date of publication
+
+ revision "2012-02-13" {
+  description
+    "Initial version";
+  reference
+    "RFC XXXX: NETCONF over Transport Layer Security (TLS)";
+ }
+
+ feature map-certificates {
+  description
+    "The map-certificates feature indicates that the server implements
+     mapping X.509 certificates to NETCONF user names.";
+ }
+
+ feature map-pre-shared-keys {
+
+  description
+    "The map-pre-shared-keys feature indicates that the server
+     implements mapping TLS pre-shared keys to NETCONF user names.";
+
+ }
+
+ typedef tls-fingerprint-type {
+  type string {
+    pattern '([0-9a-fA-F]){2}(:([0-9a-fA-F]){2})*';
+  }
+  description
+    "A cryptographic signature (fingerprint) value that can be used to
+     uniquely reference other data of potentially arbitrary length.";
+ }
+
+
+ container netconf-config {
+
+  container tls {
+
+ //
+ //  Objects related to deriving NETCONF usernames from X.509
+ //  certificates.
+ //
+
+   container cert-maps {
+    if-feature map-certificates;
+    config true;
+
+    description
+      "The cert-maps container is used by a NETCONF server to map the
+       NETCONF client's presented X.509 certificate to a NETCONF username.
+
+       On an incoming TLS connection, the client's presented certificate
+       MUST either be validated based on an established trust anchor, or
+       it MUST directly match a fingerprint in the 'cert-map' list.  This
+       module does not provide any mechanisms for configuring the
+       trust anchors; the transfer of any needed trusted certificates
+       for certificate chain validation is expected to occur through an
+       out-of-band transfer.
+
+       Once the certificate has been found acceptable (either by
+       certificate chain validation or directly matching a fingerprint
+       in the cert-map list), the cert-map list is consulted to determine
+       the appropriate NETCONF username to associate with the remote
+       connection.  This is done by considering each cert-map list entry
+       in order.  The cert-map entry's fingerprint determines whether the
+       list entry is a match for the incoming connection:
+
+           1) If the cert-map list entry's fingerprint value matches that
+              of the presented certificate, then consider the list entry
+              as a successful match.
+
+           2) If the cert-map list entry's fingerprint value matches that
+              of a locally held copy of a trusted CA certificate, and
+              that CA certificate was part of the CA certificate chain
+              to the presented certificate, then consider the list entry
+              as a successful match.
+
+       Once a matching cert-map list entry has been found, the NETCONF
+       server uses the map-type list to determine how the NETCONF username
+       associated with the session should be determined.  See the map-
+       type leaf's description for details on determining the NETCONF
+       username value.  If it is impossible to determine a NETCONF
+       username from the cert-map list entry's data combined with the data
+       presented in the certificate, then additional cert-map list entries
+       MUST be searched looking for another potential match.  If a resulting
+       NETCONF username mapped from a given cert-map list entry is not
+       compatible with the needed requirements of a NETCONF username,
+       then it MUST be considered an invalid match and additional cert-map
+       list entries MUST be searched looking for another potential match.
+
+       If no matching and valid cert-map list entry can be found, then the
+       NETCONF server MUST close the connection, and MUST NOT accept
+       NETCONF messages over it.
+
+       Security administrators are encouraged to make use of certificates
+       with subjectAltName fields that can be used as NETCONF usernames
+       so that a single root CA certificate can allow all child
+       certificate's subjectAltName to map directly to a NETCONF
+       usernames via a 1:1 transformation.";
+
+    list cert-map {
+      key "key";
+      ordered-by user;
+      description
+        "A single list entry that specifies a mapping for an incoming
+        TLS certificate to a NETCONF username.";
+
+      leaf key {
+        type string;
+        nacm:default-deny-all;
+        description
+          "The key associated with the cert-map list.";
+      }
+
+      container fingerprint {
+
+        choice algorithm-and-hash {
+          mandatory true;
+          leaf md5 {
+            type tls-fingerprint-type;
+          }
+          leaf sha1 {
+            type tls-fingerprint-type;
+          }
+          leaf sha224 {
+            type tls-fingerprint-type;
+          }
+          leaf sha256 {
+            type tls-fingerprint-type;
+          }
+          leaf sha384 {
+            type tls-fingerprint-type;
+          }
+          leaf sha512 {
+            type tls-fingerprint-type;
+          }
+          description
+            "Specifies the signature algorithm and cryptographic
+             signature (fingerprint) used to identify an X.509
+             certificate.
+
+             Implementations of this YANG module MAY, but are not
+             required to, implement all of these cryptographic signature
+             algorithms.  Implementations of this YANG module MUST
+             implement at least one of these cryptographic signature
+             algorithms.
+
+             The available choices may be extended in the future as
+             stronger cryptographic signature algorithms become
+             available and are deemed necessary.";
+
+          reference
+            "RFC 5246: The Transport Layer Security (TLS) Protocol
+             Version 1.2; Section 7.4.1.4.1,  Signature Algorithms";
+        }  // choice algorithm-and-hash
+      }    // container fingerprint
+
+      choice map-type {
+        leaf specified {
+          type nacm:user-name-type;
+          description
+            "Directly specifies the NETCONF username to be used for this
+             certificate.";
+        }
+
+        leaf-list from-certificate {
+          ordered-by user;
+          type enumeration {
+            enum rfc822Name {
+              description
+                "Maps a subjectAltName's rfc822Name to a NETCONF username.
+                 The local part of the rfc822Name is passed unaltered but
+                 the domain-part of the name MUST be passed in lowercase.
+                 This mapping results in a 1:1 correspondence between
+                 equivalent subjectAltName rfc822Name values and NETCONF
+                 username values except that the domain-part of the name
+                 MUST be passed in lowercase.
+
+                 Example rfc822Name Field:  FooBar@Example.COM
+                 is mapped to NETCONF username: FooBar@example.com.";
+            }
+            enum dNSName {
+              description
+                "Maps a subjectAltName's dNSName to a NETCONF username after
+                 first converting it to all lowercase (RFC 5280 does not
+                 specify converting to lowercase so this involves an extra
+                 step).  This mapping results in a 1:1 correspondence between
+                 subjectAltName dNSName values and the NETCONF username
+                 values.
+
+                 reference:  RFC 5280 - Internet X.509 Public Key
+                             Infrastructure Certificate and Certificate
+                             Revocation List (CRL) Profile.";
+            }
+            enum ipAddress {
+              description
+                "Maps a subjectAltName's iPAddress to a NETCONF username by
+                 transforming the binary encoded address as follows:
+
+                 1) for IPv4, the value is converted into a
+                    decimal-dotted quad address (e.g., '192.0.2.1').
+
+                 2) for IPv6 addresses, the value is converted into a
+                    32-character all lowercase hexadecimal string
+                    without any colon separators.
+
+                    This mapping results in a 1:1 correspondence between
+                    subjectAltName iPAddress values and the NETCONF username
+                    values.";
+            }
+          }
+        }   // leaf-list from-certificate
+
+
+        description
+          "Specifies the algorithm for deriving a NETCONF username from
+           a certificate.  If a mapping succeeds, then it will return a
+           NETCONF username.
+
+           If the resulting mapped value is not compatible with the
+           needed requirements of a NETCONF username, then subsequent
+           cert-map list entries MUST be searched for additional
+           matches to look for a mapping that succeeds.";
+
+      }   // choice map-type
+    }     // list cert-map
+   }      // container cert-maps
+
+
+ //
+ //  Objects related to deriving NETCONF usernames from TLS pre-shared
+ //  keys.
+ //
+
+   container psk-maps {
+    if-feature map-pre-shared-keys;
+
+    description
+      "During the TLS Handshake, the client indicates which key to use
+       by including a PSK identity in the TLS ClientKeyExchange message.
+       On the server side, this PSK identity is used to look up an entry
+       in the psk-map list.  If such an entry is found, and the pre-shared
+       keys match, then the client is authenticated.  The server uses the
+       value from the user-name leaf in the psk-map list as the NETCONF
+       username.  If the server cannot find an entry in the psk-map list,
+       or if the pre-shared keys do not match, then the server terminates
+       the connection.  For details on how the PSK identity MAY be encoded
+       in UTF-8, see section 5.1. of RFC 4279.";
+
+    reference
+      "RFC 4279: Pre-Shared Key Ciphersuites for Transport Layer
+                 Security (TLS)";
+
+    list psk-map {
+      key psk-identity;
+
+      leaf psk-identity {
+        type string;
+        description
+          "The PSK identity encoded as a UTF-8 string.";
+        reference
+          "RFC 4279: Pre-Shared Key Ciphersuites for Transport Layer
+
+                    Security (TLS)";
+      }
+
+      leaf user-name {
+        type nacm:user-name-type;
+        mandatory true;
+        description
+         "The NETCONF username associated with this PSK identity.";
+      }
+
+      leaf valid-not-before {
+        type yang:date-and-time;
+        description
+          "This PSK identity is not valid before the given data
+           and time.";
+      }
+
+      leaf valid-not-after {
+        type yang:date-and-time;
+        description
+          "This PSK identity is not valid before the given date
+           and time.";
+      }
+
+      leaf key {
+        type string {
+          pattern '([0-9a-fA-F]){2}(:([0-9a-fA-F]){2})*';
+        }
+        nacm:default-deny-all;
+        description
+          "The key associated with the PSK identity";
+      }
+    }   // list psk-map
+   }    // container psk-maps
+
+  }     // container tls
+ }      // container netconf-config
+}

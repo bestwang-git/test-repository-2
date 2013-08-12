@@ -1,0 +1,82 @@
+
+YumaPro -- A Toolset for the YANG data modeling language and NETCONF protocol
+=============================================================================
+
+Copyright (C) 2008 - 2012 by Andy Bierman <andy@yumaworks.com>
+Copyright (c) 2012 - 2013, YumaWorks, Inc. All Rights Reserved.
+
+See the file "/usr/share/doc/yumapro/yumapro-license.pdf 
+for information on usage and redistribution of this toolset
+and for a DISCLAIMER OF ALL WARRANTIES.
+
+Source:
+-------
+
+  http://www.yumaworks.com/
+
+License Files:
+--------------
+
+ This software may only be used in accordance with the terms
+ of the YumaPro Software License that applies to the purchased
+ software.
+
+Installed Files:
+---------------
+
+ Refer to the Installation Guide in the /usr/share/doc/yumapro
+ directory for details on the files installed, depending on
+ the package that was installed.
+
+Files created by YumaPro:
+-------------------------
+ - runtime directory for netconfd-pro and yangcli-pro
+   $HOME/.yumapro/
+ - yangcli-pro user-history file
+   $HOME/.yumapro/.yangcli_pro_history
+ - yangcli-pro saved sessions file
+   $HOME/.yumapro/yangcli_pro_sessions.conf
+ - yangcli-pro saved test-suites file
+   $HOME/.yumapro/yangcli_pro_tests.conf
+ - yangcli-pro saved user variables file
+   $HOME/.yumapro/yangcli_pro_uservars.xml
+ - yangcli user-specific temporary files
+   $HOME/.yumapro/tmp/*
+
+
+Some of the YANG modules includes with this software were
+generated with the smidump program, available at:
+
+  http://www.ibr.cs.tu-bs.de/projects/libsmi/
+
+This version of yuma implements the YANG language specification
+as defined in RFC 6020:
+
+  http://www.ietf.org/rfc/rfc6020.txt
+
+IMPORTANT INSTALLATION NOTE
+===========================
+
+  **************************************************************
+  *                                                            *
+  *  These programs will not function unless the YANG          *
+  *  modules are properly installed and available in           *
+  *  the module path.                                          *
+  *                                                            *
+  *  These files must be installed in one of the default       *
+  *  locations, e.g., ~/modules or /usr/share/yumapro/modules, *
+  *  or the YUMAPRO_INSTALL or YUMAPRO_HOME environment        *
+  *  variable must be properly set.                            *
+  *                                                            *
+  *  These files are used for CLI and config file processing.  *
+  *                                                            *
+  **************************************************************
+
+
+Refer to the manuals in the /usr/share/doc/yumapro/ directories
+for installation and operation instructions.
+
+   file:///usr/share/doc/yumapro/index.html
+
+
+

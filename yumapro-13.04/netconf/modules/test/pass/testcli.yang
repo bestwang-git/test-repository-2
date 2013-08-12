@@ -1,0 +1,156 @@
+module testcli {
+
+    namespace "http://netconfcentral.org/ns/testcli";
+    prefix "tc";
+
+    import yuma-interfaces { prefix yif; }
+
+    organization
+        "YumaWorks, Inc.";
+
+    contact
+        "Andy Bierman";
+
+    description
+        "YANG CLI test module 1.";
+
+    revision 2013-03-05 {
+        description 
+          "Update objects for config=false testing.
+           Remove close-session RPC function.";
+    }
+
+    revision 2012-12-26 {
+        description "Initial version.";
+    }
+
+    augment "/yif:interfaces/yif:interface" {
+        leaf config1 {
+          config true;
+          type string;
+        }
+        leaf config2 {
+          config true;
+          type string;
+        }
+    }
+
+    container test1 {
+      leaf a { 
+         type string {
+           length 1..max;
+         }
+      }
+
+      leaf b { 
+        type uint32 {
+          range min..32;
+        }
+      }
+
+      leaf noconfig { 
+        type string;
+        config false;
+      }
+
+      leaf c { 
+        type enumeration {
+          enum x;
+          enum y;
+          enum z;
+        }
+      }
+
+      leaf d {
+        type bits {
+          bit one;
+          bit two;
+          bit three;
+          bit four;
+        }
+      }
+
+      leaf e {
+        type leafref { path /test2/a1; }
+      }
+
+      leaf f {
+        type leafref { path /test2/a2; }
+      }
+
+      leaf g {
+        type leafref { path /test2/a3; }
+      }
+    }
+
+    list test2 {
+      key a1;
+      leaf a1 { 
+         type uint32; 
+      }
+      leaf a2 { 
+         type int32;
+         default 5;
+      }
+      leaf a3 { 
+         type string;
+      }
+    }
+
+    container test3 {
+      leaf def3 {
+        type int32;
+        default -4;
+      }
+      leaf nodef3 {
+        type uint8;
+      }
+    }
+
+    list test4 {
+      key "b1 b2 b3";
+      leaf b1 { 
+         type uint32; 
+      }
+      leaf b2 { 
+         type int32; 
+      }
+      leaf b3 { 
+         type string; 
+      }
+      leaf b4 { 
+         type uint32;
+      }
+      list c { 
+         key c1;
+         leaf c1 { type int32; }
+         leaf c2 { type string; }
+      } 
+    }
+
+    container test5 {
+      leaf-list e1 {
+        type int32;
+        ordered-by user;
+      }
+      list e2 {
+        key index;
+        ordered-by user;
+        leaf index {
+          type uint32;
+        }
+        leaf column1 {
+          type string;
+          mandatory true;
+        }
+      }
+    }
+
+   container test6 {
+    list t6 {
+      key i;
+      leaf i { type int32; }
+      leaf j { type int32; mandatory true; }
+    }
+   }
+}

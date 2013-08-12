@@ -1,0 +1,223 @@
+YumaPro README
+
+Last Updated: 2013-03-15
+
+
+Pre-Build steps:
+
+   - set netconf/src/platform/platform.profile details if needed
+      - see procdefs.h in this directory for common H defs
+      - CFLAGS and other make details are here
+
+   - To build:
+         > cd to the yumapro top directory
+         > make [Build Variables]
+         > sudo make [Build Variables] install
+
+Build Variables:
+
+  BUILD_ALL=1: used in Debian packaging builds to
+     make a complete yumapro binary distribution
+     
+  CYGWIN=1: build on windows within cygwin environment
+
+  CLIENT=1: used in debian build only to install just the
+     YumaPro Client files for packaging
+
+  DEBIAN=1: set for ubuntu packaing build; do not use
+     in normal builds
+
+  DEBIAN_MAKE=1: set for ubuntu packaing build; do not use
+     in normal builds; Indicates compile phase of build
+
+  DEBUG=1: set to add gdb symbols instead of -O2;
+           does not remove the #ifdef DEBUG function
+           NULL pointer checks in external functions
+
+  DESTDIR=string: set the debian target build (default NULL)
+
+  DEVELOPER=1: debian packaging build flag to build the 
+      yuma-dev package.  Do not use in normal builds.
+      This is not used for yumapro 13.04+
+
+  DOC=1: debian packaging build flag to build the yuma-doc package.
+      Do not use in normal builds
+      This is used for yumapro 13.04, but just to build docs, not
+      create a separate package for docs
+
+  ETC_PREFIX=string: set the top etc dir (after DESTDIR)
+         default: /etc
+
+  EVAL=1: build the evaluation version of the YumaPro software
+
+  FREEBSD=1: Build for a FreeBSD platform
+
+  FORCE_YUMA_HOME=1: use when building SIL libraries to   
+     link against a development version of yuma.
+     The YUMA_HOME environment variable must be set,
+     and it must point to the 'netconf' directory:
+
+     Bash example using 'mybranch':
+
+     export YUMA_HOME=/home/andy/swdev/yuma/trunk/branches/mybranch/netconf
+
+     The yuma include (H) files from $(YUMA_HOME)/src/*
+     will be used instead of the system H files in /usr/include/yuma.
+
+     The libagt and libncx libraries from $(YUMA_HOME)/target/lib
+     will be used instead of the system libraries in /usr/lib or /usr/lib64.
+     The static versions (libagt.a and libncx.a) will be expected if
+     STATIC=1 is also set.  Otherwise the dynamic library versions
+     will be expected instead.
+
+  FULL_STATIC=1: solve linking problems forcing static versions
+      of all external libraries (used only by debian package build)
+      This is deprecated and no longer used in any packaging builds
+
+  GPROFILE=1: add -pg to the CFLAGS to enable GCC profiling
+      The STATIC=1 option should also be used.
+ 
+  LIB64=1: install and look for SIL libs in /usr/lib64/yuma
+         instead of /usr/lib/yuma (used by FC14 64 bit)
+
+  MAC=1: set to compile for MacOsX
+
+  MCHECK=1: enables mcheck heap corruption checking
+       Used when getting heap corruption errors
+       Run mcheck(0) in the gdb debugger as needed
+
+  MEMTRACE=1: enables mtrace debugging
+       Used when Memory leak error message printed upon exit.
+       Need to install glibc-utils for the 'mtrace' program.
+       Tools will generate an 'mtracefile' in the CWD.
+       Run mtrace /path/to/program ./mtracefile
+
+  MODULES=1: used in debian build only to install just the
+     YumaPro YANG Modules files for packaging
+
+  NOTOASTER=1: disables building the example toaster SIL
+
+  PACKAGE_BUILD=1: set in debian and fedora packlaging scripts
+     to indicate a packaging build is in progress.
+     Replaces usage of RELEASE=N or PRODUCTION=1.
+
+  PREFIX=string: set the top install dir (after DESTDIR)
+         default: /usr
+
+  PRODUCTION=1: disables the --DDEBUG flag definition
+    in compilation so all #ifdef DEBUG code is removed
+
+  RELEASE=N: sets the version to ver-release instead of
+             version.svnversion
+
+  SERVER=1: used in debian build only to install just the
+     YumaPro Server files for packaging
+
+  SHLIB_NCX=1: used in debian build only to install just the
+     YumaPro Server libncx files for packaging
+     This is not used in yumapro 13.04+.
+
+  STATIC=1:set to use static libraries such as libncx.a,
+         instead of dynamic libraries like libncx.so 
+
+  TEST=1: make will include the 'netconf/test' directory
+      Run this command before make test, e.g.
+        make TEST=1; make test; sudo make install
+      Can be run from top or netconf directory
+
+  NOFLOAT: disable use of double and tgmath.h; XPath eval
+           of complex numbers will cause invalid results;
+           Cygwin does not support complex.h
+
+  USE_WERROR=1: use -Werror in the compile process
+    Default is not to use -Werror.
+
+  WITH_CLI=1: build the netconfd-pro server with the CLI
+     protocol included. Default is not to add this code
+
+  WITH_GDB=1: add -ggdb3 to CFALGS even if DEBUG not set
+    Default is not to add this flag if DEBUG=1 not set
+
+  WITH_LIB_SYSTEM=1: add the libsystem directory to the build
+    This builds the example yp-system directory.
+    Normally off in regular builds and always on in package builds
+
+  WITH_SIL_ERROR=1: add the sil-error directory to the build
+    This allows SIL errors to be easily generated during
+    the specified SIL callback phase for different data node types.
+    Used for developer testing to force corner-case transaction
+    code to be invoked.
+
+  WITH_YANGAPI=1: build the netconfd-pro server with the YANG-API
+     protocol included. Default is not to add this code
+
+
+To build everything (shared libs) on Linux, this will build 
+everything and install it in the default locations:
+
+   - make [FLAGS]
+   - [sudo] make [FLAGS] install
+
+For example, to build everything (static libs only) on Cygwin:
+
+   - make STATIC=1 NOFLOAT=1 CYGWIN=1
+   - [sudo] make STATIC=1 CYGWIN=1 install
+
+For example, to build everything (shared libs) on Fedora 14, 64-bit:
+
+   - make LIB64=1
+   - [sudo] make LIB64=1 install
+
+For example, to build everything (shared libs) 
+except /usr/lib/yuma/libtoaster.so
+
+   - make NOTOASTER=1
+   - [sudo] make NOTOASTER=1 install
+
+External file dependencies (for netconfd, optional):
+
+   - /etc/services 
+   - /etc/ssh/sshd_config
+   - /etc/apache2/sites-available/yang-api
+   - a2ensite yang-api
+   - a2enmod fcgi
+   - SELinux config to allow access to port 830
+
+Default Installed Programs:
+
+   - /usr/bin/yangcli-pro
+   - /usr/bin/yangdump-pro
+   - /usr/bin/yangdiff-pro
+   - /usr/bin/yp-shell
+   - /usr/sbin/netconfd-pro
+   - /usr/sbin/netconf-subsystem-pro
+   - /usr/sbin/yang-api
+
+Default Installed Libraries:
+
+  - /usr/lib/libyumapro_agt.so.2.2
+  - /usr/lib/libyumapro_ncx.so.2.2
+  - /usr/lib/yumapro/libtoaster.so
+  - /usr/lib/yumapro/libyp_system.s
+  - /usr/lib/yumapro/libsil-error.so
+
+Default Installed Libraries if LIB64=1:
+
+  - /usr/lib64/libyumapro_agt.so.2.2
+  - /usr/lib64/libyumapro_ncx.so.2.2
+  - /usr/lib64/yumapro/libtoaster.so
+  - /usr/lib64/yumapro/libyp_system.s
+  - /usr/lib64/yumapro/libsil-error.so
+   
+Default Installed Additional Files:
+
+  /usr/share/doc/yumapro/*     -- user documentation
+  /etc/yumapro/*               -- sample application config files
+  /usr/share/yumapro/*         -- root of all YumaPro data files
+  /usr/share/yumapro/modules/* -- root of installed YANG modules
+  /usr/man/man1/*              -- man page files installed here
+
+User-Specific Files
+
+  $HOME/.yumapro               -- yangcli-pro and netconfd-pro files
+

@@ -1,0 +1,17 @@
+Source: yumapro-eval
+Section: devel
+Priority: extra
+Maintainer: YumaWorks, Inc. <andy@yumaworks.com>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.8.1
+Homepage: http://www.yumaworks.com/
+
+Package: yumapro-eval
+Architecture: any
+Depends: libxml2, libssh2-1, libncurses5, ${shlibs:Depends}, ${misc:Depends}
+Description: YumaPro (eval)
+ YumaPro is a multi-protocol management API development toolkit.
+ The evaluation package contains a contrained version of the
+ netconfd-pro server, yangcli-pro client, YANG modules and some documentation
+ files.
+

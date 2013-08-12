@@ -1,0 +1,40 @@
+Source: yumapro
+Section: devel
+Priority: extra
+Maintainer: YumaWorks, Inc. <andy@yumaworks.com>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.8.1
+Homepage: http://www.yumaworks.com/
+
+Package: yumapro
+Architecture: any
+Depends: libfcgi, ${shlibs:Depends}, ${misc:Depends}
+Description: YumaPro (complete)
+ This package contains a multi-protocol management API development toolkit.
+ The netconfd-pro server includes an automated central NETCONF, HTTP/REST,
+ and SSH/CLI protocol stack, based directly on YANG modules.
+ The yangdump-pro and yangdiff-pro development tools are also included,
+ to compile and process YANG modules. The yangcli-pro program is included
+ to manage NETCONF-over-SSH servers.
+
+Package: yumapro-server
+Architecture: any
+Depends: libfcgi, ${shlibs:Depends}, ${misc:Depends}
+Description: YumaPro (server)
+ This package contains a multi-protocol server.
+ The netconfd-pro server includes an automated central NETCONF
+ protocol stack, based directly on YANG modules. The yangdump-pro and
+ yangdiff-pro development tools are also included, to compile and process
+ YANG modules.
+
+Package: yumapro-client
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: YumaPro (client)
+ This package contains the yangcli-pro program.
+ It is used to manage NETCONF over SSH servers.
+
+
+
+
+

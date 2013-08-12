@@ -1,0 +1,133 @@
+module yumaworks-system {
+
+    namespace "http://yumaworks.com/ns/yumaworks-system";
+
+    prefix "ysys";
+
+    import ietf-netconf-monitoring { prefix ncm; }
+
+    import ietf-yang-types { prefix yang; }
+
+    import yuma-ncx { prefix ncx; }
+
+    import yuma-types { prefix nt; }
+
+    // choose ietf-netconf-acm or yuma-nacm
+    import ietf-netconf-acm { prefix nacm; }
+    //import yuma-nacm { prefix nacm; }
+
+    organization "YumaWorks, Inc.";
+
+    contact
+        "Support <support at yumaworks.com>";
+
+    description 
+       "Common system operations for the netconfd-pro server.";
+
+    revision 2013-01-06 {
+        description  
+          "Initial version.";
+    }
+
+    augment /ncm:netconf-state {
+      container backup-files {
+        config false;
+        description
+          "Reports the backup files currently available
+           on the server. Only present if backup commands
+           in this module are supported by the server";
+        list backup-file {
+          key name;
+
+          leaf name {
+            type nt:NcxName;
+            description 
+              "File name for the backup.";
+          }
+
+          leaf backup-time {
+            type yang:date-and-time;
+            description 
+              "Date and time the backup file was created.";
+          }
+        }
+      }
+    }
+
+    augment /ncm:netconf-state/ncm:schemas/ncm:schema {
+      leaf conformance {
+        type boolean;
+        config false;
+        description
+          "Indicates whether the server is claiming conformance
+           to the module represented by this schema or not.
+           If 'true', the server implements the module
+           represented by the indicated schema,
+           according to the YANG module capability URI.
+           If 'false', the server just imports definitions
+           from the module represented by the indicated schema.";
+      }
+      /* -- TBD until submodules added to list
+      leaf module {
+        type boolean;
+        config false;
+        description
+          "Indicates whether this schema represents a 
+           module or a submodule.
+           If 'true', the schema represents a module.
+           If 'false', the schema represents a sub-module.";
+      }
+      */
+    }
+
+    rpc backup {
+      nacm:default-deny-all;
+      description 
+        "Backup the current running configuration to a file
+         on the device.";
+      input {
+        leaf filename {
+          type nt:NcxName;
+          mandatory true;
+          description 
+            "File name for the backup. A simple identifier name
+             is expected with no directory specifications or
+             file extensions added. (e.g., 'backup1').";
+        }
+      }
+    }
+
+    rpc delete-backup {
+      nacm:default-deny-all;
+      description 
+        "Delete the specified backup file on the device.";
+      input {
+        ncx:default-parm filename;
+        leaf filename {
+          type nt:NcxName;
+          mandatory true;
+          description 
+            "File name to delete";
+        }
+      }
+    }
+
+
+    rpc restore {
+      nacm:default-deny-all;
+      description 
+        "Restore a saved configuration on the device to the 
+         running configuration.";
+      input {
+        leaf filename {
+          type nt:NcxName;
+          mandatory true;
+          description 
+            "File name for the restore. A simple identifier name
+             is expected with no directory specifications or
+             file extensions added. (e.g., 'backup1').";
+        }
+      }
+    }
+
+}

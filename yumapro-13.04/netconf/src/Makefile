@@ -1,0 +1,235 @@
+# Makefile for NETCONF entire source directory
+#  
+#   src directory
+
+##################### PROGRAMS ########################
+##################### LIBRARIES ########################
+#
+# Check if this is a DEBIAN package build for
+# the target, which will be 1 of:
+#   SHLIBS, CLIENT, SERVER, DEVELOPER, SOURCE
+#
+# if not a DEBIAN build then none of these environment
+# variables will be defined, so it is either a normal
+# developer build or an RPM package build
+
+ifndef DEBIAN
+ # fedora packaging or normal build
+
+ APPS = subsys-pro netconfd-pro yangdump-pro yangdiff-pro yangcli-pro
+ ifdef WITH_CLI
+  APPS += yp-shell
+ endif   # WITH_CLI
+ ifdef WITH_YANGAPI
+  APPS += yang-api
+ endif # WITH_YANGAPI
+
+ DIRS = agt ncx mgr ydump ycli $(APPS)
+
+else # is DEBIAN
+ ifdef DEBIAN_MAKE
+  # debian packaging build - build phase
+  APPS = subsys-pro netconfd-pro yangdump-pro yangdiff-pro yangcli-pro
+
+  ifdef WITH_CLI
+   APPS += yp-shell
+  endif # WITH_CLI
+  ifdef WITH_YANGAPI
+   APPS += yang-api
+  endif # WITH_YANGAPI
+
+  DIRS = agt ncx mgr ydump ycli $(APPS)
+
+ else # not DEBIAN_MAKE
+  # debian packaging build - install phase
+  # only 1 of CLIENT, SERVER, DEVELOPER, SHLIB_NCX will be true
+
+  ifdef CLIENT
+APPS = yangcli-pro
+DIRS = ncx mgr ycli $(APPS)
+  endif # CLIENT
+
+  ifdef SERVER
+APPS = yangdump-pro yangdiff-pro subsys-pro netconfd-pro
+DIRS = agt ncx ydump
+   ifdef WITH_CLI
+APPS += yp-shell
+DIRS += ycli
+   endif  # WITH_CLI (part of SERVER)
+   ifdef WITH_YANGAPI
+DIRS += yang-api
+   endif  # WITH_YANGAPI (part of SERVER)
+DIRS += $(APPS)
+  endif # SERVER
+
+  ifdef DEVELOPER
+APPS = 
+DIRS = agt ydump ncx
+  endif # DEVELOPER
+
+  ifdef SHLIB_NCX
+DIRS = ncx
+  endif # SHLIB_NCX
+
+  ifdef EVAL
+APPS = subsys-pro netconfd-pro yangcli-pro
+DIRS = agt ncx ydump ycli $(APPS)
+  endif # EVAL
+
+  ifdef BUILD_ALL
+APPS = yangdump-pro yangdiff-pro subsys-pro netconfd-pro yangcli-pro
+   ifdef WITH_CLI
+APPS += yp-shell
+   endif  # WITH_CLI (part of build all)
+   ifdef WITH_YANGAPI
+APPS += yang-api
+   endif  # WITH_YANGAPI (part of build all)
+DIRS = agt mgr ncx ycli ydump $(APPS)
+  endif # BUILD_ALL
+
+ endif # DEBIAN_MAKE
+endif # DEBIAN
+
+ifndef PREFIX
+    PREFIX=/usr
+endif
+
+
+PROJECT_NM=yumapro
+REAL_INC_INST=$(DESTDIR)$(PREFIX)/include/$(PROJECT_NM)
+
+ifdef FREEBSD
+ REAL_LIB_INST=$(DESTDIR)$(PREFIX)/lib/$(PROJECT_NM)
+else
+ ifdef LIB64
+  REAL_LIB_INST=$(DESTDIR)$(PREFIX)/lib64/$(PROJECT_NM)
+ else
+  REAL_LIB_INST=$(DESTDIR)$(PREFIX)/lib/$(PROJECT_NM)
+ endif # LIB64
+endif # FREEBSD
+
+REAL_SRC_INST=$(DESTDIR)$(PREFIX)/share/$(PROJECT_NM)
+
+#################### PLATFORM DEFINITIONS ############
+
+all: treeall
+
+include platform/platform.profile
+
+################################ MAKE RULES #################################
+#
+
+test:
+
+depend: treedepend
+
+clean: treeclean
+
+superclean: treesuperclean
+
+distclean: treedistclean
+
+test: treetest
+
+lint: treelint
+
+install: treeinstall
+
+uninstall: treeuninstall
+
+notabs: treenotabs
+
+addheader: treeaddheader
+
+fixcopyright: treefixcopyright
+
+setuptarget:
+	mkdir -p ../target
+	mkdir -p ../target/bin
+	mkdir -p ../target/lib
+	for dir in $(DIRS); do\
+	  mkdir -p ../target/$$dir;\
+	done
+
+treeall: setuptarget
+ifdef RELEASE
+	/bin/sh platform/setversion.sh
+else
+	/bin/sh platform/setversion-debug.sh
+endif
+	for dir in $(DIRS); do\
+	  cd $$dir && $(MAKE) $(JFLAG) all && cd ..;\
+        done
+
+treedepend:
+	for dir in $(DIRS); do\
+	  cd $$dir && $(MAKE) $(JFLAG) depend && cd ..;\
+        done
+
+treeclean:
+	for dir in $(DIRS); do\
+	  cd $$dir && $(MAKE) clean && cd ..;\
+        done
+
+treesuperclean:
+	for dir in $(DIRS); do\
+	  cd $$dir && $(MAKE) superclean && cd ..;\
+        done
+
+treedistclean:
+	for dir in $(DIRS); do\
+	  cd $$dir && $(MAKE) distclean && cd ..;\
+        done
+
+treetest: setuptarget
+	for dir in $(DIRS); do\
+	  cd $$dir && $(MAKE) $(JFLAG) test && cd ..;\
+        done
+
+treelint:
+	for dir in $(DIRS); do\
+	  cd $$dir && $(MAKE) $(JFLAG) lint && cd ..;\
+        done
+
+treeinstall:
+	for dir in $(DIRS); do\
+          cd $$dir && $(MAKE) install && cd ..;\
+        done
+
+treeuninstall:
+	for dir in $(DIRS); do\
+          cd $$dir && $(MAKE) uninstall && cd ..;\
+        done
+	rm -rf $(REAL_INC_INST)
+	rm -rf $(REAL_LIB_INST)
+	rm -rf $(REAL_SRC_INST)
+
+treenotabs:
+	for dir in $(DIRS); do\
+          cd $$dir && $(MAKE) notabs && cd ..;\
+        done
+
+treeaddheader:
+	for dir in $(DIRS); do\
+          cd $$dir && $(MAKE) addheader && cd ..;\
+        done
+
+
+treefixcopyright:
+	for dir in $(DIRS); do\
+          cd $$dir && $(MAKE) fixcopyright && cd ..;\
+        done
+
+.PHONY: depend clean superclean test lint install \
+	treeall treedepend treeclean treesuperclean \
+	treetest treelint treeinstall notabs treenotabs \
+	addheader treeaddheader uninstall treeuninstall \
+	distclean treedistclean fixcopyright treefixcopyright \
+	setuptarget test
+
+# prevent the make program from choking on all the symbols
+# that get generated from autogenerated make rules
+.NOEXPORT:
+
+
+

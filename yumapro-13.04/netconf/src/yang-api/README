@@ -1,0 +1,114 @@
+YANG-API README (v0.2 2013-02-06)
+
+This program is the FastCGI thin client that connects
+Apache2 (or other WEB server) to the netconf-subsystem-pro
+program.  
+
+1) Install the FastCGI developer kit:
+
+The WEB site for FastCGI:
+http://www.fastcgi.com/drupal/
+
+Download latest libfcgi:
+http://www.fastcgi.com/dist/fcgi.tar.gz
+
+build and install from the sources.
+
+2) Enable mod_fcgid in Apache2
+
+sudo a2enmod fcgid
+
+3) Add Virtual host to Apache2 config
+Ubuntu file: /etc/apache2/sites-available/yang-api
+
+<VirtualHost *:80>
+	ServerAdmin webmaster@localhost
+	ServerName webserver.localdomain
+	DocumentRoot /var/www/yang-api
+	<Directory />
+		Options FollowSymLinks
+		AllowOverride None
+	</Directory>
+
+        AddHandler fastcgi-script .fcgi
+
+	<Directory /var/www/yang-api>
+                SetHandler fcgid-script 
+		Options Indexes FollowSymLinks ExecCGI
+		AllowOverride all
+		Order allow,deny
+		allow from all
+
+                AuthType Basic
+	        AuthName "Yuma API"
+	        AuthUserFile /var/www/passwords/passwd
+	        Require valid-user
+	</Directory>
+
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+
+	# Possible values include: debug, info, notice, warn, error, crit,
+	# alert, emerg.
+	LogLevel warn
+
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+</VirtualHost>
+
+3a) enable the yang-api site
+
+> sudo a2ensite yang-api
+
+Enabling site yang-api.
+To activate the new configuration, you need to run:
+  service apache2 reload
+
+4) Make yang-api directory for Apache2
+
+sudo mkdir /var/www/yang-api
+sudo chmod 775 /var/www/yang-api
+
+5) Set up Apache users
+
+Set up apache users or comment out the following lines
+in the apache config
+
+5a)
+
+sudo mkdir /var/www/passwords
+cd /var/www/passwords
+sudo htpasswd -c passwd admin
+<give a password for user admin>
+
+OR 5b)
+                #AuthType Basic
+	        #AuthName "Yuma API"
+	        #AuthUserFile /var/www/passwords/passwd
+	        #Require valid-user
+
+6) Build and install yang-api from this directory
+
+*** Only DEBUG trace mode available now!!!
+
+make DEBUG=1
+sudo make install
+
+7) start the netconfd server
+
+Make sure the yumapro/netconf/src/subsys code is used
+and installed in /usr/sbin/netconf-subsystem
+
+8) Restart Apache2
+
+sudo service apache2 restart
+
+9) Check if all 4 programs working together from firefox or chrome
+   or poster
+
+http://localhost/yang-api
+
+*** No messages are processed in netconfd yet
+*** No real replies are sent yet
+
+
+

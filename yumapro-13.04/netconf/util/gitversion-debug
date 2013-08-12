@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+# print the git current commit hash tag
+
+git_version_debug()
+{
+   if [ -x "/usr/bin/git" ]; then
+       GITBRANCH=`git branch | awk '/\*/ { print $2; }'`
+       GITMODIFIED=`(git status | grep "modified:\|added:\|deleted:" -q) && echo "-M"`
+   else
+       GITBRANCH=nobranch
+       GITMODIFIED=
+   fi
+
+   TSTAMP=`date +%Y-%m-%d.%H.%M`
+
+   echo $GITBRANCH-$TSTAMP$GITMODIFIED
+}
+
+git_version_debug

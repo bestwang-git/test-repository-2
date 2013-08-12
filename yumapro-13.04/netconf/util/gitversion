@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# print the git current commit hash tag
+
+git_version()
+{
+   if [ -x "/usr/bin/git" ]; then
+       GITVERSION=`git describe --always`
+       GITMODIFIED=`(git status | grep "modified:\|added:\|deleted:" -q) && echo "-M"`
+
+   else
+       GITVERSION=XX.XX
+       GITMODIFIED=
+   fi
+   echo $GITVERSION$GITMODIFIED
+}
+
+git_version

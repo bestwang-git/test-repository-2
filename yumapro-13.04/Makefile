@@ -1,0 +1,259 @@
+# Makefile for Yuma entire project
+#  
+#   very top directory
+
+##################### LIBRARIES ########################
+#
+# DIRS:  
+# 
+# This is an ordered list
+# Put only the directories that build object files in the list
+
+DIRS =
+
+FULLDIRS = libtecla libtoaster libsystem sil-error netconf
+
+# COMPILE PHASE
+#
+# Debian packaging:
+# in compile phase DEBIAN_MAKE and DEBIAN will be set
+# if the yumapro-eval package then EVAL will also be set
+# If DOC=1 then only the docs will be built
+#
+# INSTALL PHASE
+#
+# in install phase DEBIAN will be set and one of 5 below will be set:
+#  CLIENT
+#  SERVER
+#  DEVELOPER  (not used)
+#  SHLIBS_NCX (not used)
+#  EVAL
+#  BUILD_ALL
+#
+# DOC=1 is not used in yumapro 13.04 install phase:
+# If DOC=1 then only the docs will be installed
+#  DEBIAN=1 DOC=1 SERVER=1  --> install yumapro-server-doc package
+#  DEBIAN=1 DOC=1 CLIENT=1  --> install yumapro-client-doc package
+#  DEBIAN=1 DOC=1  --> install yumapro-common-doc package
+#
+# If Fedora or Ubuntu packaging then PACKAGE_BUILD will be set
+#
+# If a normal build none of the flags mentioned here will be set
+
+ifdef DEBIAN_MAKE
+DIRS += libtecla
+else
+ ifdef DEBIAN
+  ifdef CLIENT
+DIRS += libtecla
+  endif # CLIENT
+
+  ifdef EVAL
+DIRS += libtecla
+  endif # EVAL
+
+  ifdef SERVER
+   ifdef WITH_CLI
+DIRS += libtecla
+   endif # WITH_CLI
+  endif # SERVER
+
+  ifdef BUILD_ALL
+DIRS += libtecla
+  endif # BUILD_ALL
+
+ else # not DEBIAN
+  DIRS += libtecla
+ endif # DEBIAN
+endif # DEBIAN_MAKE
+
+DIRS += netconf
+
+ifndef NOTOASTER
+ ifdef DEBIAN_MAKE
+  DIRS += libtoaster
+ else
+  ifdef DEBIAN
+   ifdef SERVER
+    DIRS += libtoaster
+   endif # SERVER
+
+   ifdef DEVELOPER
+    DIRS += libtoaster
+   endif # DEVELOPER
+
+   ifdef EVAL
+    DIRS += libtoaster
+   endif # EVAL
+
+   ifdef BUILD_ALL
+    DIRS += libtoaster
+   endif # EVAL
+
+  else # not DEBIAN
+   DIRS += libtoaster
+  endif # DEBIAN
+ endif # DEBIAN_MAKE
+endif # NOTOASTER
+
+
+ifdef DEBIAN_MAKE
+ DIRS += libsystem sil-error
+else
+ ifdef DEBIAN
+  ifdef DEVELOPER
+   DIRS += libsystem sil-error
+  endif # DEVELOPER
+
+  ifdef EVAL
+   DIRS += libsystem sil-error
+  endif # EVAL
+
+  ifdef SERVER
+   DIRS += libsystem sil-error
+  endif # SERVER
+
+  ifdef BUILD_ALL
+   DIRS += libsystem sil-error
+  endif # BUILD_ALL
+
+ else # not DEBIAN
+  ifdef PACKAGE_BUILD
+   # force build in a RPM package release
+   DIRS += libsystem sil-error
+  else
+   # normal build
+   ifdef WITH_SIL_ERROR
+    DIRS += sil-error
+   endif  # WITH_SIL_ERROR
+   ifdef WITH_LIB_SYSTEM
+    DIRS += libsystem
+   endif  # WITH_LIB_SYSTEM
+  endif  # PACKAGE_BUILD
+ endif # DEBIAN
+endif # DEBIAN_MAKE
+
+
+# building yuma-doc ignores DIRS, uses DOCDIRS instead
+DOCDIRS = netconf/doc
+
+TESTDIRS = netconf
+
+#################### PLATFORM DEFINITIONS ############
+
+all: yumaall
+
+################################ MAKE RULES #################################
+#
+
+test: yumatest
+
+clean: yumaclean
+
+superclean: yumasuperclean
+
+distclean: yumadistclean
+
+install: yumainstall
+
+uninstall: yumauninstall
+
+ifdef DOC
+# yuma-doc package
+# nothing to make at this time, just install
+yumaall: yuma-doc
+
+yumainstall: yuma-doc-install
+
+yumauninstall: yuma-doc-uninstall
+
+else
+ifdef DEVELOPER
+# yuma-dev package
+yumaall: yuma-dev
+
+yumainstall: yuma-all-install
+
+yumauninstall: yuma-all-uninstall
+
+else
+# yuma package or normal build
+yumaall: yuma-all
+
+yumainstall: yuma-all-install
+
+yumauninstall: yuma-all-uninstall
+
+endif  # DEVELOPER
+endif  # DOC
+
+libtecla/Makefile:
+	cd libtecla && ./configure
+
+yuma-all: libtecla/Makefile
+	for dir in $(DIRS); do\
+	  cd $$dir && $(MAKE) && cd ..;\
+        done
+
+yuma-dev:
+	for dir in $(DIRS); do\
+	  cd $$dir && $(MAKE) && cd ..;\
+        done
+
+yumatest:
+	for dir in $(TESTDIRS); do\
+	  cd $$dir && $(MAKE) test && cd ..;\
+        done
+
+yumaclean: libtecla/Makefile
+	for dir in $(DIRS); do\
+	  cd $$dir && $(MAKE) clean && cd ..;\
+        done
+
+yumasuperclean: libtecla/Makefile
+	for dir in $(DIRS); do\
+	  cd $$dir && $(MAKE) superclean && cd ..;\
+        done
+
+yumadistclean: libtecla/Makefile
+	for dir in $(DIRS); do\
+	  cd $$dir && $(MAKE) distclean && cd ..;\
+        done
+
+yuma-all-install:
+	for dir in $(DIRS); do\
+          cd $$dir && $(MAKE) install && cd ..;\
+        done
+
+yuma-all-uninstall:
+	for dir in $(FULLDIRS); do\
+          cd $$dir && $(MAKE) uninstall && cd ..;\
+        done
+
+yuma-doc:
+	for dir in $(DOCDIRS); do\
+          cd $$dir && $(MAKE) && cd ..;\
+        done
+
+yuma-doc-install:
+	for dir in $(DOCDIRS); do\
+          cd $$dir && $(MAKE) install && cd ..;\
+        done
+
+yuma-doc-uninstall:
+	for dir in $(DOCDIRS); do\
+          cd $$dir && $(MAKE) uninstall && cd ..;\
+        done
+
+.PHONY: all clean superclean distclean install yuma-dev \
+	yumaall yumaclean yumasuperclean yumadistclean yumainstall \
+	yuma-all yuma-all-install yuma-doc yuma-doc-install test yumatest \
+	yumauninstall yuma-all-uninstall yuma-doc-uninstall
+
+
+# prevent the make program from choking on all the symbols
+# that get generated from autogenerated make rules
+.NOEXPORT:
+
+
+

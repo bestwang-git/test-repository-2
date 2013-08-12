@@ -1,0 +1,36 @@
+.\" Process this file with
+.\" nroff -e -mandoc foo.1
+.\"
+.TH yp-shell 1 "March 31, 2013" Linux "yp-shell 13.04"
+.SH NAME
+yp-shell \- CLI client to access netconfd-pro server
+
+.SH SYNOPSIS
+.nf
+
+   yp-shell
+
+.fi
+.SH DESCRIPTION
+.B yp-shell
+is a CLI client application that is called by the
+login process server to start a shell for the specified
+user.
+
+.SH USAGE
+The location of this program needs to be configured
+in the /etc/passwd file.  The shell for the login user
+needs to be set to /usr/bin/yp-shell.
+
+The /etc/shells file needs to be edited as root,
+and the line '/usr/bin/yp-shell' added to the end
+of the file.
+
+There are no program options or environment variables
+used by this program.
+
+.SH AUTHOR
+YumaWorks, Inc., <support at yumaworks dot com>
+
+.SH SEE ALSO
+.BR netconfd-pro (1)

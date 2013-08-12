@@ -1,0 +1,111 @@
+
+<h1>Release Notes - YumaPro - Version 13.04-1</h1>
+    
+<h2>        Sub-task
+</h2>
+<ul>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-12'>YPW-12</a>] -         Integrated HTTP/REST access to database
+NETCONF, CLI, REST all share same locks
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-13'>YPW-13</a>] -         Entity-ID Filtering
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-14'>YPW-14</a>] -         Entity-ID If-Match Support
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-27'>YPW-27</a>] -         API for using external syslog service instead of
+the Linux syslog service
+</li>
+</ul>
+        
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-45'>YPW-45</a>] -         IdentifierOrZero does not work in yangcli command line parsing
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-51'>YPW-51</a>] -         yangdump C code gen has extra code for notifications
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-57'>YPW-57</a>] -         entries added out of order in system-ordered list
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-61'>YPW-61</a>] -         yangcli stomps aliases...
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-65'>YPW-65</a>] -         yangcli_uservars.xml and .yangcli_history files corrupted; old versions came back
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-69'>YPW-69</a>] -         test-apply in developer doc
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-89'>YPW-89</a>] -         version string buffer overflow error
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-90'>YPW-90</a>] -         notification filtering does not work
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-91'>YPW-91</a>] -         directories specified in HOME, YUMAPRO_HOME,. YUMAPRO_INSTALL env-vars and CLI params are not verified
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-92'>YPW-92</a>] -         NACM counters get deleted if the /nacm counter is replaced
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-93'>YPW-93</a>] -         anyxml cannot be edited correctly
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-96'>YPW-96</a>] -         commit timeout rollback does not always get edit list correct
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-97'>YPW-97</a>] -         clients cannot find yuma-netconf.yang because it is not advertised by the server
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-99'>YPW-99</a>] -         NACM data rules not applied if node added after rule was added
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-100'>YPW-100</a>] -         NACM data rules not applied to candidate datastore after it changes
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-101'>YPW-101</a>] -         Creation and deletion of default NP containers is not handled correctly
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-102'>YPW-102</a>] -         Incorrect session connected information with session-cfg show command
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-104'>YPW-104</a>] -         XPath searches sometimes returned in wrong order
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-106'>YPW-106</a>] -         Not all the connected sessions are cleared when the server exits.
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-107'>YPW-107</a>] -         HOME environment variable problems when running server as deamon
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-108'>YPW-108</a>] -         home and yumapro-home variables ignored if set in .conf file
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-109'>YPW-109</a>] -         yangcli exits if wrong password given
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-110'>YPW-110</a>] -         enum values not always created correctly
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-111'>YPW-111</a>] -         identityref not supposed to allow base as a valid value
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-112'>YPW-112</a>] -         XPath get of list key produces 2 copies of key leaf
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-113'>YPW-113</a>] -         editing child nodes of default NP container does not work
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-114'>YPW-114</a>] -         Latest cheetah-integ yangcli-pro crashes when &quot;replace&quot; command issued
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-115'>YPW-115</a>] -         load submodule crashes server
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-116'>YPW-116</a>] -         yangdump not generating correct code for edit callbacks for union leafs
+</li>
+</ul>
+        
+<h2>        Improvement
+</h2>
+<ul>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-95'>YPW-95</a>] -         cheetah-val speed tests
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-98'>YPW-98</a>] -         add message-indent parameter to client and server
+</li>
+</ul>
+    
+<h2>        New Feature
+</h2>
+<ul>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-80'>YPW-80</a>] -         XPath performance improvements
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-81'>YPW-81</a>] -         Entity ID tagging
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-84'>YPW-84</a>] -         add configure mode in yangcli (also yp-shell)
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-86'>YPW-86</a>] -         Add yp-shell program and control message support in server
+</li>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-105'>YPW-105</a>] -         backup/restore support
+</li>
+</ul>
+        
+<h2>        Task
+</h2>
+<ul>
+<li>[<a href='https://yumaworks.atlassian.net/browse/YPW-88'>YPW-88</a>] -         investigate performance impact of IO buffer sizes
+</li>
+</ul>

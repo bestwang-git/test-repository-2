@@ -1,0 +1,62 @@
+module testdef {
+
+  namespace "http://www.netconfcentral.org/ns/testdef";
+  prefix "testdef";
+
+  import yuma-interfaces { prefix if; }
+
+  revision 2012-09-15;
+
+  augment /if:interfaces/if:interface {
+    container test-np-defaults {
+      leaf defleaf {
+        type uint32;
+        default 42;
+      }
+      container np2 {
+        leaf defleaf2 {
+          type uint32;
+          default 142;
+        }
+      }
+    }
+  }
+
+  container inline-np3 {
+    leaf defleaf {
+      type uint32;
+      default 42;
+    }
+    container np2 {
+      leaf defleaf2 {
+        type uint32;
+        default 142;
+      }
+    }
+    container p3 {
+      presence "";
+      leaf defleaf3 {
+        type uint32;
+        default 1142;
+      }
+    }
+  }
+
+  choice top-def-choice {
+    default A;
+    leaf A {
+      type int32;
+      default 1;
+    }
+    leaf B {
+      type int32;
+      default 2;
+    }
+  }
+
+  leaf C {
+    type int32;
+    default 3;
+  }
+
+}

@@ -1,0 +1,64 @@
+module perftest {
+
+    namespace "http://yumaworks.com/ns/perftest";
+    prefix "pt";
+
+    organization
+        "YumaWorks, Inc.";
+
+    contact
+        "Andy Bierman";
+
+    description
+        "Performance test module 1.";
+
+    revision 2013-03-22 {
+        description 
+          "Initial version.";
+    }
+
+    list ptest1 {
+      key index;
+      leaf index {
+        type uint32;
+      }
+      leaf p1 {
+        type int32;
+      }
+    }
+
+    list ptest2 {
+      key "b1 b2 b3";
+      leaf b1 { 
+         type uint32; 
+      }
+      leaf b2 { 
+         type int32; 
+      }
+      leaf b3 { 
+         type string;
+      }
+      leaf b4 { 
+         type uint32;
+      }
+      list c { 
+         key c1;
+         leaf c1 { type int32; }
+         leaf c2 { type string; }
+      }
+    }
+  
+    container ptest3 {
+      list perftest3 {
+        key i;
+        must "o1 = 'foo' and o2 > 10 and o3 " +
+          "= 'notest' and //*[.='test2']";
+        leaf i { type int32; }
+        leaf o1 { type string; }
+        leaf o2 { type uint32; }
+        leaf o3 { type string; }
+        leaf o4 { type string; }
+      }
+    }
+
+}

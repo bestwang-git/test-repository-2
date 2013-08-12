@@ -1,0 +1,35 @@
+.\" Process this file with
+.\" nroff -e -mandoc foo.1
+.\"
+.TH yang-api 1 "March 31, 2013" Linux "yang-api 13.04"
+.SH NAME
+yang-api \- HTTP/REST thin client to access netconfd-pro server
+
+.SH SYNOPSIS
+.nf
+
+   yang-api
+
+.fi
+.SH DESCRIPTION
+.B yang-api
+is an HTTP/REST thin client application that is called by the
+FastCGI module in the WEB server to start a singlre request
+session for the specified user.
+
+.SH USAGE
+The location of this program needs to be configured
+in the WEB server config file. Refer to the installation
+guide for details.  The /usr/sbin/yp-shell program may
+need to be relocated to a different directory specific
+to the WEB server CGI-BIN configuration.
+(e.g., /var/www/yang-api)
+
+There are no program options or environment variables
+used by this program.
+
+.SH AUTHOR
+YumaWorks, Inc., <support at yumaworks dot com>
+
+.SH SEE ALSO
+.BR netconfd-pro (1)
